@@ -1,0 +1,186 @@
+
+2) Create table employee along with primary key Constraint
+
+public class Employee
+{
+    public int EmployeeId { get; set; }
+    public string FirstName { get; set; }
+    public string LastName { get; set; }
+
+}
+
+using Microsoft.EntityFrameworkCore;
+
+public class MyDbContext : DbContext
+{
+    public DbSet<Employee> Employees { get; set; }
+
+    protected override void OnModelCreating(ModelBuilder modelBuilder)
+    {
+        modelBuilder.Entity<Employee>()
+            .HasKey(e => e.EmployeeId);
+    }
+
+    protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+    {
+        optionsBuilder.UseSqlServer("YourConnectionString");
+    }
+}
+
+using (var context = new MyDbContext())
+{
+    var employee = new Employee
+    {
+        FirstName = "John",
+        LastName = "Doe"
+        // set other properties...
+    };
+
+    context.Employees.Add(employee);
+    context.SaveChanges();
+}
+
+
+
+3) Print all the information
+
+using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new MyDbContext())
+        {
+            // Retrieve all employees from the database
+            var allEmployees = context.Employees.ToList();
+
+            // Print employee information
+            Console.WriteLine("Employee Information:");
+            foreach (var employee in allEmployees)
+            {
+                Console.WriteLine($"Employee ID: {employee.EmployeeId}");
+                Console.WriteLine($"First Name: {employee.FirstName}");
+                Console.WriteLine($"Last Name: {employee.LastName}");
+                // Print other properties...
+                Console.WriteLine();
+            }
+        }
+    }
+}
+
+
+4) Perform crud operations
+
+1. Create (Insert):
+using System;
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new MyDbContext())
+        {
+            // Create (Insert) operation
+            var newEmployee = new Employee
+            {
+                FirstName = "Jane",
+                LastName = "Doe"
+                // set other properties...
+            };
+
+            context.Employees.Add(newEmployee);
+            context.SaveChanges();
+
+            Console.WriteLine("Employee added successfully!");
+        }
+    }
+}
+2) Read (Select):
+using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new MyDbContext())
+        {
+            // Read (Select) operation
+            var allEmployees = context.Employees.ToList();
+
+            Console.WriteLine("Employee Information:");
+            foreach (var employee in allEmployees)
+            {
+                Console.WriteLine($"Employee ID: {employee.EmployeeId}");
+                Console.WriteLine($"First Name: {employee.FirstName}");
+                Console.WriteLine($"Last Name: {employee.LastName}");
+                // Print other properties...
+                Console.WriteLine();
+            }
+        }
+    }
+}
+
+3)Update:
+using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new MyDbContext())
+        {
+            // Retrieve an employee to update
+            var employeeToUpdate = context.Employees.FirstOrDefault(e => e.FirstName == "Jane");
+
+            if (employeeToUpdate != null)
+            {
+                // Update operation
+                employeeToUpdate.LastName = "Smith";
+                // Update other properties...
+
+                context.SaveChanges();
+
+                Console.WriteLine("Employee updated successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Employee not found for update.");
+            }
+        }
+    }
+}
+
+4) Delete:
+using System;
+using System.Linq;
+
+class Program
+{
+    static void Main()
+    {
+        using (var context = new MyDbContext())
+        {
+            // Retrieve an employee to delete
+            var employeeToDelete = context.Employees.FirstOrDefault(e => e.FirstName == "Jane");
+
+            if (employeeToDelete != null)
+            {
+                // Delete operation
+                context.Employees.Remove(employeeToDelete);
+                context.SaveChanges();
+
+                Console.WriteLine("Employee deleted successfully!");
+            }
+            else
+            {
+                Console.WriteLine("Employee not found for delete.");
+            }
+        }
+    }
+}
+
+6) After saving the information the information should be display in the data grid view
